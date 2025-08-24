@@ -1,18 +1,21 @@
+import Toybox.Attention;
+import Toybox.Lang;
 import Toybox.System;
 import Toybox.Timer;
 import Toybox.WatchUi;
-import Toybox.Lang;
 
 using Device;
 
 class MainView extends WatchUi.View {
   var screenShape_;
   var timer_;
+  var vibrations_;
 
   function initialize() {
     View.initialize();
     screenShape_ = System.getDeviceSettings().screenShape;
     timer_ = new Timer.Timer();
+    vibrations_ = [new Attention.VibeProfile(50, 1000)];
   }
 
   function onLayout(dc) {
@@ -39,7 +42,12 @@ class MainView extends WatchUi.View {
       var period = 60.0 / updateRate * 1000;
       timer_.start(method(:onTimer), period, true);
     }
-    onTimer();
+
+    var provider = currentProvider();
+    if (provider != null) {
+      provider.update();
+    }
+    WatchUi.requestUpdate();
   }
 
   function onHide() {
@@ -48,9 +56,16 @@ class MainView extends WatchUi.View {
   }
 
   function onTimer() {
+    var shouldVibrate = false;
     var provider = currentProvider();
     if (provider != null) {
+      shouldVibrate =
+        (provider instanceof TimeBasedProvider) &&
+        (Time.now().value() >= (provider as TimeBasedProvider).next_);
       provider.update();
+    }
+    if (shouldVibrate) {
+      Attention.vibrate(vibrations_);
     }
     WatchUi.requestUpdate();
   }
@@ -161,7 +176,7 @@ class MainView extends WatchUi.View {
     var dcHeight = dc.getHeight();
     if (subscreenIsTopRight) {
       var drawableHeight = subscreen.height + (dcHeight - subscreen.height);
-      // Not exactly one quarter, because of visual gravity: more space above 
+      // Not exactly one quarter, because of visual gravity: more space above
       // than below (in spite of room above not being used because of subscreen)
       return subscreen.height + (drawableHeight / 4.8);
     } else {

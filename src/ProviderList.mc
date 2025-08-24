@@ -1,3 +1,4 @@
+import Toybox.Attention;
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
@@ -5,6 +6,7 @@ import Toybox.WatchUi;
 // Render global _providers as a Menu2
 class ProviderList extends WatchUi.Menu2 {
   var timer_;
+  var vibrations_;
 
   function initialize() {
     var h = System.getDeviceSettings().screenHeight;
@@ -14,6 +16,7 @@ class ProviderList extends WatchUi.Menu2 {
       :dividerType => DIVIDER_TYPE_ICON // Ignored on CIQ < 5.0.1
     });
     timer_ = new Timer.Timer();
+    vibrations_ = [new Attention.VibeProfile(50, 1000)];
   }
 
   function onHide() {
@@ -42,11 +45,18 @@ class ProviderList extends WatchUi.Menu2 {
     }
   }
 
-  function onTimer() as Void {
+  function onTimer() {
+    var shouldVibrate = false;
     for (var i = 0; i < _providers.size(); i++) {
       var p = _providers[i];
+      shouldVibrate = shouldVibrate ||
+        ((p instanceof TimeBasedProvider) &&
+         (Time.now().value() >= (p as TimeBasedProvider).next_));
       p.update();
       getItem(i).setSubLabel(p.code_);
+    }
+    if (shouldVibrate) {
+      Attention.vibrate(vibrations_);
     }
     WatchUi.requestUpdate();
   }
