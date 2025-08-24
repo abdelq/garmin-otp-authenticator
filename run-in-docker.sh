@@ -4,6 +4,8 @@ xhost +local:
 MAP_UID=${UID:-`id -u`}
 MAP_GID=${GID:-`id -g`}
 
+mkdir -p .Garmin
+
 docker run -it --rm \
     -e DISPLAY=unix$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
