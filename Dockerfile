@@ -33,7 +33,7 @@ RUN curl -L https://go.microsoft.com/fwlink/?LinkID=760868 -o vscode.deb \
 
 # Set user=1000 and group=100 as the owner of all files under /home/developer and /opt
 RUN mkdir -p /home/developer \
-    && echo "developer:x:1000:1000:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd \
+    && echo "developer:x:1000:100:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd \
     && chown -R 1000:100 /home/developer && chmod -R ug+rw /home/developer \
     && chown -R 1000:100 /opt && chmod -R ug+rw /opt
 
