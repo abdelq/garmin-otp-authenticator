@@ -112,6 +112,9 @@ available in the `eclipse` of the docker container.
 While a default device is defined in `Makefile`, one can select the device to
 run tests for or start the simulator on with `DEVICE=<device name in manifest>`.
 
+It's assumed that you have a signing key named by default `signing-key.der`.
+Running commands in the `Makefile` may fail otherwise.
+
 ### Testing
 
 The codebase contains tests about the logic which can be run with `make test`,

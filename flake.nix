@@ -14,6 +14,7 @@
         buildInputs = with pkgs; [
           xorg.xhost
           gnumake
+          openssl
         ];
       };
 
